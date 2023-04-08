@@ -1,0 +1,36 @@
+<h1>Login</h1>
+<hr>
+<form id="LOGIN">
+    <input type="username" name="username" placeholder="Username" required />
+    <input type="password" name="password" placeholder="Password" required />
+    <button type="submit">Login</button>
+</form>
+<script>
+    let CSRF_TOKEN = undefined 
+    fetch('/api/getToken/').then(response => response.json()).then((data) =>  {
+        CSRF_TOKEN =  data.csrf_token
+    })
+    const API_URL = `{% url 'login-api' %}`
+    const LOGIN_FORM = document.getElementById("LOGIN")
+    LOGIN_FORM.addEventListener("submit", function(e){
+        e.preventDefault()
+        const formData = new FormData(LOGIN_FORM)
+        const OPTIONS = {
+            method:"POST",
+            headers: {
+                'X-CSRFToken': CSRF_TOKEN
+            },
+            body: formData
+        }
+        const URL = location.origin + API_URL
+        fetch(URL, OPTIONS).then((res)=>{
+            return res.json()
+        }).then((response)=>{
+            console.log(response)
+            if(response.authenticated){
+                location.href = location.origin
+            }
+        })
+    })
+</script>
+

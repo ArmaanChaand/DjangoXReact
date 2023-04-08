@@ -1,0 +1,44 @@
+<h1>{{the_note.title}}</h1>
+<p>{{the_note.maker}}</p>
+<hr>
+<p>
+    {{the_note.body}}
+</p>
+<hr>
+<button id="DELETE" data-note-id="{{the_note.pk}}">
+    Delete
+</button>
+<script>
+    const DELETE = document.getElementById('DELETE');
+    let CSRF_TOKEN = undefined 
+    fetch('/api/getToken/').then(response => response.json()).then((data) =>  {
+        CSRF_TOKEN =  data.csrf_token
+    })
+    DELETE.addEventListener("click", function(){
+        const API_URL = location.origin + '/api/deleteNote/'
+        const DATA = JSON.stringify({
+            the_note_id: this.dataset.noteId
+        })
+        console.log(CSRF_TOKEN)
+        const OPTIONS = {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+                'x-CSRFToken': CSRF_TOKEN
+            },
+            body: DATA
+        }
+        if(CSRF_TOKEN) fetch(API_URL, OPTIONS).then((res)=>{
+            if (res.ok) {
+                return res.json()
+            } else {
+                console.log(res)
+                return {"Error": true}
+            }
+        }).then((response)=>{
+            if(response.success){
+                location.href = location.origin + `${response.redirect_to}`
+            }
+        })
+    })
+</script>

@@ -1,0 +1,29 @@
+<h1>New Note</h1>
+<form id="NEW_NOTE">
+    {% csrf_token %}
+    <input type="text" name="title" required />
+    <textarea name="body" required>
+
+    </textarea>
+    <button type="submit">Save</button>
+</form>
+<script>
+    const API_URL = `{% url 'new-note-api' %}`
+    const NEW_NOTE = document.getElementById("NEW_NOTE")
+    NEW_NOTE.addEventListener("submit", function(e){
+        e.preventDefault()
+        const formData = new FormData(NEW_NOTE)
+        const OPTIONS = {
+            method:"POST",
+            body: formData
+        }
+        const URL = location.origin + API_URL
+        fetch(URL, OPTIONS).then((res)=>{
+            return res.json()
+        }).then((response)=>{
+            if(response.success){
+                location.href = location.origin + response.redirect_to
+            }
+        })
+    })
+</script>

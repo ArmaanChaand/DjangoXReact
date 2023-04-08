@@ -1,0 +1,40 @@
+<h1>Register</h1>
+<hr>
+<form id="REGISTER">
+    <input type="username" name="username" placeholder="Username" required />
+    <input type="email" name="email" placeholder="Email" required />
+    <input type="password" name="password1" placeholder="Password" required/>
+    <input type="password" name="password2" placeholder="Confirm Password" required/>
+    <button type="submit">Register</button>
+</form>
+
+
+
+<script>
+    let CSRF_TOKEN = undefined 
+    fetch('/api/getToken/').then(response => response.json()).then((data) =>  {
+        CSRF_TOKEN =  data.csrf_token
+    })
+    const API_URL = `{% url 'register-api' %}`;
+    const REGISTER_FORM = document.getElementById("REGISTER")
+    REGISTER_FORM.addEventListener("submit", function(e){
+        e.preventDefault()
+        const formData = new FormData(REGISTER_FORM)
+        const OPTIONS = {
+            method:"POST",
+            headers: {
+                'X-CSRFToken': CSRF_TOKEN
+            },
+            body: formData
+        }
+        const URL = location.origin + API_URL
+        fetch(URL, OPTIONS).then((res)=>{
+            return res.json()
+        }).then((response)=>{
+            console.log(response)
+            if(response.authenticated){
+                location.href = location.origin
+            }
+        })
+    })
+</script>

@@ -1,0 +1,61 @@
+<style>
+    .buttons{
+        display: flex;
+        flex-direction: column;
+        align-items: start;
+        justify-content: space-between;
+
+    }
+</style>
+<h1> Home </h1>
+{% if user.is_authenticated %}
+<p>Hi, {{user}}</p>
+{% else %}
+<p>Unauthenticated</p>
+{% endif %}
+<hr>
+<h2>User's Registered...</h2>
+<ol>
+    {% for user in users %}
+    <li>{{user}}</li>
+    {% endfor %}
+</ol>
+<hr>
+<p>Number of notes made: {{all_notes}}</p>
+<hr>
+{% if notes %}
+<h2>All Notes</h2>
+<ol>
+    {% for note in notes %}
+    <li>
+        <a href="{% url 'note-view' note.pk %}"> {{note.title}} </a>
+    </li>
+    {% endfor %}
+</ol>
+{% endif %}
+<hr />
+{% if user.is_authenticated %}
+<h2>My Notes</h2>
+<ol>
+    {% for note in notes %}
+    {% if note.maker == user %}
+    <li>
+        <a href="{% url 'note-view' note.pk %}"> {{note.title}} </a>
+    </li>
+    {% endif %}
+    {% endfor %}
+</ol>
+{% endif %}
+<hr>
+<div class="buttons">
+    <a href="{% url 'new-note-view' %}">New Note</a>
+</div>
+<hr>
+<div class="buttons">
+    {% if user.is_authenticated %}
+    <a href="{% url 'logout-view' %}">Logout</a>
+    {% else %}
+    <a href="{% url 'register-view' %}">Sign Up</a>
+    <a href="{% url 'login-view' %}">Login</a>
+    {% endif %}
+</div>
